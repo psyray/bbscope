@@ -455,6 +455,7 @@ func scopePlatformFilterDropdown() g.Node {
 		{"bc", "Bugcrowd"},
 		{"it", "Intigriti"},
 		{"ywh", "YesWeHack"},
+		{"yog", "Yogosha"},
 	}
 
 	var checkboxItems []g.Node
@@ -637,7 +638,7 @@ func scopeHandler(w http.ResponseWriter, r *http.Request) {
 
 	PageLayout(
 		"Scope data - bbscope.com",
-		"Browse and download bug bounty scope data from all bug bounty platforms. Find in-scope websites from HackerOne, Bugcrowd, Intigriti and YesWeHack.",
+		"Browse and download bug bounty scope data from all bug bounty platforms. Find in-scope websites from HackerOne, Bugcrowd, Intigriti, YesWeHack and Yogosha.",
 		Navbar("/scope"),
 		ScopeContent(),
 		FooterEl(),
@@ -663,7 +664,7 @@ func programsIndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	PageLayout(
 		"All Bug Bounty Programs | bbscope.com",
-		"Complete list of bug bounty and VDP programs from HackerOne, Bugcrowd, Intigriti and YesWeHack. Browse scope and in-scope assets by program.",
+		"Complete list of bug bounty and VDP programs from HackerOne, Bugcrowd, Intigriti, YesWeHack and Yogosha. Browse scope and in-scope assets by program.",
 		Navbar("/programs"),
 		ProgramsIndexContent(slugs),
 		FooterEl(),
@@ -676,9 +677,9 @@ func programsIndexHandler(w http.ResponseWriter, r *http.Request) {
 // This gives crawlers a direct HTML path to every program page for better indexing.
 func ProgramsIndexContent(slugs []storage.ProgramSlug) g.Node {
 	// Group by platform (same order as elsewhere: h1, bc, it, ywh)
-	platformOrder := []string{"h1", "bc", "it", "ywh"}
+	platformOrder := []string{"h1", "bc", "it", "ywh", "yog"}
 	platformLabels := map[string]string{
-		"h1": "HackerOne", "bc": "Bugcrowd", "it": "Intigriti", "ywh": "YesWeHack",
+		"h1": "HackerOne", "bc": "Bugcrowd", "it": "Intigriti", "ywh": "YesWeHack", "yog": "Yogosha",
 	}
 	byPlatform := make(map[string][]storage.ProgramSlug)
 	for _, s := range slugs {
@@ -849,6 +850,7 @@ func UpdatesContent() g.Node {
 		{"bc", "Bugcrowd"},
 		{"it", "Intigriti"},
 		{"ywh", "YesWeHack"},
+		{"yog", "Yogosha"},
 	}
 
 	var platformTabs []g.Node
@@ -959,7 +961,7 @@ func updatesHandler(w http.ResponseWriter, r *http.Request) {
 
 	PageLayout(
 		"Scope Updates - bbscope.com",
-		"Recent changes to bug bounty program scopes from HackerOne, Bugcrowd, Intigriti and YesWeHack.",
+		"Recent changes to bug bounty program scopes from HackerOne, Bugcrowd, Intigriti, YesWeHack and Yogosha.",
 		Navbar("/updates"),
 		UpdatesContent(),
 		FooterEl(),

@@ -31,7 +31,7 @@ func DocsContent() g.Node {
 		// Introduction
 		Section(Class("bg-zinc-900/30 border border-zinc-800/50 rounded-2xl shadow-xl shadow-black/10 p-6 md:p-8 mb-6"),
 			H2(Class("text-lg font-semibold text-white mb-3"), g.Text("Introduction")),
-			P(Class("text-zinc-400 leading-relaxed"), g.Text("This platform aggregates public bug bounty program scopes from HackerOne, Bugcrowd, Intigriti, and YesWeHack. All data is fetched automatically using the bbscope CLI tool.")),
+			P(Class("text-zinc-400 leading-relaxed"), g.Text("This platform aggregates public bug bounty program scopes from HackerOne, Bugcrowd, Intigriti, YesWeHack, and Yogosha. All data is fetched automatically using the bbscope CLI tool.")),
 		),
 
 		// Features

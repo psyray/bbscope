@@ -16,11 +16,12 @@ var debugPlatformNames = map[string]string{
 	"bc":  "Bugcrowd",
 	"it":  "Intigriti",
 	"ywh": "YesWeHack",
+	"yog": "Yogosha",
 }
 
 func debugContent() g.Node {
 	statuses := GetPollerStatuses()
-	platformOrder := []string{"h1", "bc", "it", "ywh"}
+	platformOrder := []string{"h1", "bc", "it", "ywh", "yog"}
 
 	var rows []g.Node
 	for _, key := range platformOrder {

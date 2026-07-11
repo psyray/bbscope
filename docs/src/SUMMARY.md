@@ -35,6 +35,7 @@
 - [Bugcrowd](./platforms/bugcrowd.md)
 - [Intigriti](./platforms/intigriti.md)
 - [YesWeHack](./platforms/yeswehack.md)
+- [Yogosha](./platforms/yogosha.md)
 - [Immunefi](./platforms/immunefi.md)
 
 # AI Normalization

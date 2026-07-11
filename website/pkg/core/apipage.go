@@ -68,6 +68,7 @@ func APIPageContent() g.Node {
 						Option(Value("bc"), g.Text("Bugcrowd")),
 						Option(Value("it"), g.Text("Intigriti")),
 						Option(Value("ywh"), g.Text("YesWeHack")),
+						Option(Value("yog"), g.Text("Yogosha")),
 					),
 				),
 				Div(

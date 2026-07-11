@@ -10,7 +10,7 @@
 > **Breaking Change:**
 > Subcommands have changed!
 > *   Old: `bbscope h1`
-> *   **New:** `bbscope poll h1` (and similarly for `bc`, `it`, `ywh`, etc.)
+> *   **New:** `bbscope poll h1` (and similarly for `bc`, `it`, `ywh`, `yog`, etc.)
 > 
 > **New Features in v2:**
 > *   **PostgreSQL Support (Optional)**: Store targets in a DB for persistence and querying.
@@ -20,7 +20,7 @@
 > *   **Centralized Polling**: Poll multiple platforms in one go.
 > *   **Smart Scope Extraction**: Use `db get` to fetch normalized targets by category (wildcards, cidrs, etc.).
 
-**bbscope** is a powerful scope aggregation tool for bug bounty hunters, designed to fetch, store, and manage program scopes from HackerOne, Bugcrowd, Intigriti, YesWeHack, and Immunefi right from your command line.
+**bbscope** is a powerful scope aggregation tool for bug bounty hunters, designed to fetch, store, and manage program scopes from HackerOne, Bugcrowd, Intigriti, YesWeHack, Immunefi, and Yogosha right from your command line.
 
 Visit [bbscope.com](https://bbscope.com/) to explore an hourly-updated list of public scopes from all supported platforms, stats, and more!
 
@@ -100,6 +100,10 @@ yeswehack:
   email: ""
   password: ""
   otpsecret: "" # Your 2FA secret key string
+yogosha:
+  email: ""
+  password: ""
+  otpsecret: "" # Your 2FA secret key string
 ai:
   provider: "openai"
   api_key: "" # or set OPENAI_API_KEY env var
@@ -120,6 +124,8 @@ Alternatively, you can provide credentials directly via command-line flags when 
 | `poll it` | `--token` | Your Intigriti authorization token (Bearer). |
 | `poll ywh` | `--token` | A live YesWeHack bearer token. Use as an alternative to email/pass/otp. |
 | | `--email`, `--password`, `--otp-secret`| Your YesWeHack login credentials. |
+| `poll yog` | `--token` | A live Yogosha bearer token. Use as an alternative to email/pass/otp. |
+| | `--email`, `--password`, `--otp-secret`| Your Yogosha login credentials. |
 
 **Database Configuration (Optional):**
 
@@ -172,6 +178,7 @@ The `poll` command fetches scope data from the platforms. You can poll all platf
 - `bbscope poll bc`: Polls Bugcrowd.
 - `bbscope poll it`: Polls Intigriti.
 - `bbscope poll ywh`: Polls YesWeHack.
+- `bbscope poll yog`: Polls Yogosha.
 - `bbscope poll immunefi`: Polls Immunefi (no authentication required).
 
 
@@ -378,7 +385,13 @@ bbscope poll it --token "your_api_token"
 bbscope poll ywh --token "your_jwt_token"
 ```
 
-**11. Immunefi Polling**
+**11. Yogosha Polling**
+
+```bash
+bbscope poll yog --email "your@email.com" --password "your_password" --otp-secret "your_totp_secret"
+```
+
+**12. Immunefi Polling**
 
 ```bash
 bbscope poll immunefi

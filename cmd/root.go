@@ -15,13 +15,13 @@ import (
 var cfgFile string
 
 const (
-	LOGO = `	 _     _                              
-	| |__ | |__  ___  ___ ___  _ __   ___ 
+	LOGO = `	 _     _
+	| |__ | |__  ___  ___ ___  _ __   ___
 	| '_ \| '_ \/ __|/ __/ _ \| '_ \ / _ \
 	| |_) | |_) \__ \ (_| (_) | |_) |  __/
 	|_.__/|_.__/|___/\___\___/| .__/ \___|
 	                          |_|           v2
-							  
+
 `
 )
 
@@ -46,7 +46,7 @@ func Execute() {
 	// Legacy support: redirect "bbscope h1" -> "bbscope poll h1" (and others)
 	if len(os.Args) > 1 {
 		legacyCmds := map[string]bool{
-			"h1": true, "bc": true, "it": true, "ywh": true, "immunefi": true,
+			"h1": true, "bc": true, "it": true, "ywh": true, "immunefi": true, "yog": true,
 		}
 		if legacyCmds[os.Args[1]] {
 			utils.Log.Warnf("The '%s' command is deprecated. We are automatically executing 'poll %s' for you.", os.Args[1], os.Args[1])
@@ -117,6 +117,9 @@ func initConfig() {
 	viper.SetDefault("yeswehack.email", "")
 	viper.SetDefault("yeswehack.password", "")
 	viper.SetDefault("yeswehack.otpsecret", "")
+	viper.SetDefault("yogosha.email", "")
+	viper.SetDefault("yogosha.password", "")
+	viper.SetDefault("yogosha.otpsecret", "")
 	viper.SetDefault("ai.provider", "openai")
 	viper.SetDefault("ai.model", "gpt-4o-mini")
 	viper.SetDefault("ai.api_key", "")

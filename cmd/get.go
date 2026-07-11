@@ -63,5 +63,5 @@ func getAndPrintTargets(cmd *cobra.Command, targetType string, aggressive bool) 
 
 func init() {
 	dbCmd.AddCommand(getCmd)
-	getCmd.PersistentFlags().String("platform", "all", "Limit results to a specific platform (h1, bc, it, ywh, immunefi). Default: all platforms.")
+	getCmd.PersistentFlags().String("platform", "all", "Limit results to a specific platform (h1, bc, it, ywh, immunefi, yog). Default: all platforms.")
 }

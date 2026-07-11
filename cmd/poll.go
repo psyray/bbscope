@@ -16,6 +16,7 @@ import (
 	h1platform "github.com/sw33tLie/bbscope/v2/pkg/platforms/hackerone"
 	itplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/intigriti"
 	ywhplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/yeswehack"
+	yogplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/yogosha"
 	"github.com/sw33tLie/bbscope/v2/pkg/polling"
 	"github.com/sw33tLie/bbscope/v2/pkg/scope"
 	"github.com/sw33tLie/bbscope/v2/pkg/storage"
@@ -95,6 +96,22 @@ var pollCmd = &cobra.Command{
 			}
 		} else {
 			utils.Log.Info("Skipping YesWeHack: email, password, or otpsecret not found in config.")
+		}
+
+		// Yogosha
+		yogEmail := viper.GetString("yogosha.email")
+		yogPass := viper.GetString("yogosha.password")
+		yogOTP := viper.GetString("yogosha.otpsecret")
+		if yogEmail != "" && yogPass != "" && yogOTP != "" {
+			yogPoller := &yogplatform.Poller{}
+			authCfg := platforms.AuthConfig{Email: yogEmail, Password: yogPass, OtpSecret: yogOTP, Proxy: proxyURL}
+			if err := yogPoller.Authenticate(cmd.Context(), authCfg); err != nil {
+				utils.Log.Errorf("Yogosha auth failed: %v", err)
+			} else {
+				pollers = append(pollers, yogPoller)
+			}
+		} else {
+			utils.Log.Info("Skipping Yogosha: email, password, or otpsecret not found in config.")
 		}
 
 		if len(pollers) == 0 {

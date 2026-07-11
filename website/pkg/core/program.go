@@ -759,6 +759,8 @@ func platformBadge(platform string) g.Node {
 		colors = "bg-purple-900/50 text-purple-300 border border-purple-800"
 	case "ywh", "yeswehack":
 		colors = "bg-yellow-900/50 text-yellow-300 border border-yellow-800"
+	case "yog", "yogosha":
+		colors = "bg-cyan-900/50 text-cyan-300 border border-cyan-800"
 	}
 	return Span(Class("inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold rounded-md "+colors), g.Text(capitalizedPlatform(platform)))
 }
@@ -774,6 +776,8 @@ func capitalizedPlatform(platform string) string {
 		return "Intigriti"
 	case "ywh", "yeswehack":
 		return "YesWeHack"
+	case "yog", "yogosha":
+		return "Yogosha"
 	default:
 		return platform
 	}
