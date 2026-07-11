@@ -220,6 +220,8 @@ func (p *Poller) FetchProgramScope(ctx context.Context, handle string, opts plat
 		return true
 	})
 
+	pData.Metadata = extractYogoshaMetadata(body, isBBP)
+
 	return pData, nil
 }
 
