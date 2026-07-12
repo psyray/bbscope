@@ -217,8 +217,8 @@
     list.sort(function (a, b) {
       var va, vb;
       if (key === "handle") {
-        va = a.handle.toLowerCase();
-        vb = b.handle.toLowerCase();
+        va = a.handle.toLowerCase().replace(/^\/engagements\//, '');
+        vb = b.handle.toLowerCase().replace(/^\/engagements\//, '');
       } else if (key === "platform") {
         va = a.platform.toLowerCase();
         vb = b.platform.toLowerCase();
@@ -241,8 +241,8 @@
 
       // Secondary sort by handle
       if (key !== "handle") {
-        var ha = a.handle.toLowerCase();
-        var hb = b.handle.toLowerCase();
+        var ha = a.handle.toLowerCase().replace(/^\/engagements\//, '');
+        var hb = b.handle.toLowerCase().replace(/^\/engagements\//, '');
         if (ha < hb) return -1;
         if (ha > hb) return 1;
       }

@@ -137,7 +137,7 @@ func (d *DB) ListAllProgramsFlat(ctx context.Context, rawMode bool) ([]ProgramLi
 			LEFT JOIN program_metadata md ON md.program_id = p.id
 			WHERE p.disabled = 0 AND p.is_ignored = 0
 			GROUP BY p.id, p.platform, p.handle, p.url, md.bounty_reward_min, md.bounty_reward_max, md.currency, md.reports_count
-			ORDER BY LOWER(p.handle) ASC
+			ORDER BY LOWER(REPLACE(p.handle, '/engagements/', '')) ASC
 		`
 	} else {
 		query = `
@@ -152,7 +152,7 @@ func (d *DB) ListAllProgramsFlat(ctx context.Context, rawMode bool) ([]ProgramLi
 			LEFT JOIN program_metadata md ON md.program_id = p.id
 			WHERE p.disabled = 0 AND p.is_ignored = 0
 			GROUP BY p.id, p.platform, p.handle, p.url, md.bounty_reward_min, md.bounty_reward_max, md.currency, md.reports_count
-			ORDER BY LOWER(p.handle) ASC
+			ORDER BY LOWER(REPLACE(p.handle, '/engagements/', '')) ASC
 		`
 	}
 
@@ -329,10 +329,10 @@ func (d *DB) ListProgramsPaginated(ctx context.Context, opts ProgramListOptions)
 	}
 
 	// Sort column mapping
-	sortColumn := "LOWER(p.handle)"
+	sortColumn := "LOWER(REPLACE(p.handle, '/engagements/', ''))"
 	switch opts.SortBy {
 	case "handle":
-		sortColumn = "LOWER(p.handle)"
+		sortColumn = "LOWER(REPLACE(p.handle, '/engagements/', ''))"
 	case "platform":
 		sortColumn = "LOWER(p.platform)"
 	case "in_scope_count":
@@ -361,7 +361,7 @@ func (d *DB) ListProgramsPaginated(ctx context.Context, opts ProgramListOptions)
 		%s
 		GROUP BY p.id, p.platform, p.handle, p.url
 		%s
-		ORDER BY %s %s, LOWER(p.handle) ASC
+		ORDER BY %s %s, LOWER(REPLACE(p.handle, '/engagements/', '')) ASC
 		LIMIT $%d OFFSET $%d
 	`, where, havingClause, sortColumn, sortDir, argIdx, argIdx+1)
 
