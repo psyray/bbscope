@@ -539,6 +539,7 @@ type apiUpdateEntry struct {
 	Category   string `json:"category,omitempty"`
 	Platform   string `json:"platform"`
 	Handle     string `json:"handle"`
+	Title      string `json:"title,omitempty"`
 	ProgramURL string `json:"program_url"`
 	Timestamp  string `json:"timestamp"`
 }
@@ -666,6 +667,7 @@ func apiUpdatesHandler(w http.ResponseWriter, r *http.Request) {
 			Category:   category,
 			Platform:   c.Platform,
 			Handle:     c.Handle,
+			Title:      c.Title,
 			ProgramURL: programURL,
 			Timestamp:  c.OccurredAt.UTC().Format(time.RFC3339),
 		})

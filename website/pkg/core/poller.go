@@ -9,10 +9,12 @@ import (
 
 	"github.com/sw33tLie/bbscope/v2/pkg/ai"
 	"github.com/sw33tLie/bbscope/v2/pkg/platforms"
+	bbchplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/bugbountych"
 	bcplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/bugcrowd"
 	h1platform "github.com/sw33tLie/bbscope/v2/pkg/platforms/hackerone"
 	itplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/intigriti"
 	ywhplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/yeswehack"
+	yogplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/yogosha"
 	"github.com/sw33tLie/bbscope/v2/pkg/polling"
 )
 
@@ -160,6 +162,42 @@ func buildPollers() []platforms.PlatformPoller {
 	} else {
 		log.Println("Poller: Skipping YesWeHack (YWH_EMAIL/YWH_PASSWORD/YWH_OTP not set)")
 		setPollerStatus(&PollerStatus{Platform: "ywh", StartedAt: time.Now(), Skipped: true})
+	}
+
+	// Yogosha
+	yogEmail := os.Getenv("YOG_EMAIL")
+	yogPass := os.Getenv("YOG_PASSWORD")
+	yogOTP := os.Getenv("YOG_OTP")
+	if yogEmail != "" && yogPass != "" && yogOTP != "" {
+		yogPoller := &yogplatform.Poller{}
+		authCfg := platforms.AuthConfig{Email: yogEmail, Password: yogPass, OtpSecret: yogOTP}
+		if err := yogPoller.Authenticate(ctx, authCfg); err != nil {
+			log.Printf("Poller: Yogosha auth failed: %v", err)
+			setPollerStatus(&PollerStatus{Platform: "yog", StartedAt: time.Now(), Success: false})
+		} else {
+			pollers = append(pollers, yogPoller)
+		}
+	} else {
+		log.Println("Poller: Skipping Yogosha (YOG_EMAIL/YOG_PASSWORD/YOG_OTP not set)")
+		setPollerStatus(&PollerStatus{Platform: "yog", StartedAt: time.Now(), Skipped: true})
+	}
+
+	// BugBounty.ch
+	bbchEmail := os.Getenv("BBCH_EMAIL")
+	bbchPass := os.Getenv("BBCH_PASSWORD")
+	bbchOTP := os.Getenv("BBCH_OTP")
+	if bbchEmail != "" && bbchPass != "" && bbchOTP != "" {
+		bbchPoller := &bbchplatform.Poller{}
+		authCfg := platforms.AuthConfig{Email: bbchEmail, Password: bbchPass, OtpSecret: bbchOTP}
+		if err := bbchPoller.Authenticate(ctx, authCfg); err != nil {
+			log.Printf("Poller: BugBounty.ch auth failed: %v", err)
+			setPollerStatus(&PollerStatus{Platform: "bbch", StartedAt: time.Now(), Success: false})
+		} else {
+			pollers = append(pollers, bbchPoller)
+		}
+	} else {
+		log.Println("Poller: Skipping BugBounty.ch (BBCH_EMAIL/BBCH_PASSWORD/BBCH_OTP not set)")
+		setPollerStatus(&PollerStatus{Platform: "bbch", StartedAt: time.Now(), Skipped: true})
 	}
 
 	return pollers

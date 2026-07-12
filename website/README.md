@@ -57,6 +57,8 @@ All platform credentials are optional. Unconfigured platforms are simply skipped
 | Bugcrowd | `BC_EMAIL`, `BC_PASSWORD`, `BC_OTP` | Or set `BC_PUBLIC_ONLY=1` for public programs only |
 | Intigriti | `IT_TOKEN` | Bearer token |
 | YesWeHack | `YWH_EMAIL`, `YWH_PASSWORD`, `YWH_OTP` | Email + password + OTP |
+| Yogosha | `YOG_EMAIL`, `YOG_PASSWORD`, `YOG_OTP` | Email + password + OTP |
+| BugBounty.ch | `BBCH_EMAIL`, `BBCH_PASSWORD`, `BBCH_OTP` | Email + password + OTP |
 
 ### AI normalization (optional)
 

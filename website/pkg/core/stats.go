@@ -84,9 +84,11 @@ func StatsContent(platformCounts map[string]int, statsErr error,
 	bcCount := platformCounts["bc"]
 	ywhCount := platformCounts["ywh"]
 	itCount := platformCounts["it"]
+	yogCount := platformCounts["yog"]
+	bbchCount := platformCounts["bbch"]
 
 	// Summary stat cards
-	totalPrograms := h1Count + bcCount + ywhCount + itCount
+	totalPrograms := h1Count + bcCount + ywhCount + itCount + yogCount + bbchCount
 	totalAssets := 0
 	for _, c := range assetCounts {
 		totalAssets += c
@@ -159,10 +161,10 @@ func StatsContent(platformCounts map[string]int, statsErr error,
 				new Chart(document.getElementById('programChart'), {
 					type: 'doughnut',
 					data: {
-						labels: ['HackerOne', 'Bugcrowd', 'YesWeHack', 'Intigriti'],
+						labels: ['HackerOne', 'Bugcrowd', 'YesWeHack', 'Intigriti', 'Yogosha', 'BugBounty.ch'],
 						datasets: [{
-							data: [%d, %d, %d, %d],
-							backgroundColor: ['#3b82f6', '#f97316', '#eab308', '#8b5cf6'],
+							data: [%d, %d, %d, %d, %d, %d],
+							backgroundColor: ['#3b82f6', '#f97316', '#eab308', '#8b5cf6', '#06b6d4', '#10b981'],
 							borderColor: '#27272a',
 							borderWidth: 2,
 							hoverOffset: 8
@@ -217,7 +219,7 @@ func StatsContent(platformCounts map[string]int, statsErr error,
 						}
 					}
 				});
-			`, h1Count, bcCount, ywhCount, itCount,
+				`, h1Count, bcCount, ywhCount, itCount, yogCount, bbchCount,
 				strings.Join(labels, ","),
 				strings.Join(counts, ","),
 			))),
@@ -237,10 +239,10 @@ func StatsContent(platformCounts map[string]int, statsErr error,
 					new Chart(document.getElementById('programChart'), {
 						type: 'doughnut',
 						data: {
-							labels: ['HackerOne', 'Bugcrowd', 'YesWeHack', 'Intigriti'],
+							labels: ['HackerOne', 'Bugcrowd', 'YesWeHack', 'Intigriti', 'Yogosha', 'BugBounty.ch'],
 							datasets: [{
-								data: [%d, %d, %d, %d],
-								backgroundColor: ['#3b82f6', '#f97316', '#eab308', '#8b5cf6'],
+								data: [%d, %d, %d, %d, %d, %d],
+								backgroundColor: ['#3b82f6', '#f97316', '#eab308', '#8b5cf6', '#06b6d4', '#10b981'],
 								borderColor: '#27272a',
 								borderWidth: 2,
 								hoverOffset: 8
@@ -263,7 +265,7 @@ func StatsContent(platformCounts map[string]int, statsErr error,
 							}
 						}
 					});
-				`, h1Count, bcCount, ywhCount, itCount))),
+					`, h1Count, bcCount, ywhCount, itCount, yogCount, bbchCount))),
 			)
 		}
 	}
@@ -316,7 +318,7 @@ func statsHandler(w http.ResponseWriter, r *http.Request) {
 
 	PageLayout(
 		"Platform statistics - bbscope.com",
-		"View statistics and analytics for bug bounty programs across different platforms. Compare program counts from HackerOne, Bugcrowd, YesWeHack, Intigriti and other security platforms.",
+		"View statistics and analytics for bug bounty programs across different platforms. Compare program counts from HackerOne, Bugcrowd, YesWeHack, Intigriti, Yogosha, BugBounty.ch and other security platforms.",
 		Navbar("/stats"),
 		StatsContent(platformCounts, statsErr, assetCounts, assetErr, bbpFilter),
 		FooterEl(),

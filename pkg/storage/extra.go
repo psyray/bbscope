@@ -85,6 +85,7 @@ type ProgramListEntry struct {
 	IsBBP           bool     `json:"is_bbp"`
 	Targets         []string `json:"targets,omitempty"`    // target display names for search
 	Categories      []string `json:"categories,omitempty"` // distinct unified categories
+	Title           string   `json:"title,omitempty"`      // human-readable title from program_metadata
 
 	// Metadata (from program_metadata table, may be zero/empty for programs
 	// that have not been polled since the metadata feature was added)
@@ -118,6 +119,7 @@ type ProgramTarget struct {
 type ProgramSlug struct {
 	Platform string
 	Handle   string
+	Title    string // human-readable title from program_metadata (may be empty)
 }
 
 // ListAllProgramsFlat returns all active, non-ignored programs with aggregated target counts
@@ -131,29 +133,31 @@ func (d *DB) ListAllProgramsFlat(ctx context.Context, rawMode bool) ([]ProgramLi
 				COALESCE(SUM(CASE WHEN t.in_scope = 1 THEN 1 ELSE 0 END), 0) AS in_scope_count,
 				COALESCE(SUM(CASE WHEN t.in_scope = 0 THEN 1 ELSE 0 END), 0) AS out_of_scope_count,
 				COALESCE(MAX(t.is_bbp), 0) AS has_bbp,
-				md.bounty_reward_min, md.bounty_reward_max, COALESCE(md.currency, ''), md.reports_count
-			FROM programs p
-			LEFT JOIN targets_raw t ON t.program_id = p.id
-			LEFT JOIN program_metadata md ON md.program_id = p.id
-			WHERE p.disabled = 0 AND p.is_ignored = 0
-			GROUP BY p.id, p.platform, p.handle, p.url, md.bounty_reward_min, md.bounty_reward_max, md.currency, md.reports_count
-			ORDER BY LOWER(p.handle) ASC
-		`
+				md.bounty_reward_min, md.bounty_reward_max, COALESCE(md.currency, ''), md.reports_count,
+				COALESCE(md.title, '')
+				FROM programs p
+				LEFT JOIN targets_raw t ON t.program_id = p.id
+				LEFT JOIN program_metadata md ON md.program_id = p.id
+				WHERE p.disabled = 0 AND p.is_ignored = 0
+				GROUP BY p.id, p.platform, p.handle, p.url, md.bounty_reward_min, md.bounty_reward_max, md.currency, md.reports_count, md.title
+				ORDER BY LOWER(REPLACE(p.handle, '/engagements/', '')) ASC
+			`
 	} else {
 		query = `
 			SELECT p.id, p.platform, p.handle, p.url,
 				COALESCE(SUM(CASE WHEN COALESCE(a.in_scope, t.in_scope) = 1 THEN 1 ELSE 0 END), 0) AS in_scope_count,
 				COALESCE(SUM(CASE WHEN COALESCE(a.in_scope, t.in_scope) = 0 THEN 1 ELSE 0 END), 0) AS out_of_scope_count,
 				COALESCE(MAX(t.is_bbp), 0) AS has_bbp,
-				md.bounty_reward_min, md.bounty_reward_max, COALESCE(md.currency, ''), md.reports_count
-			FROM programs p
-			LEFT JOIN targets_raw t ON t.program_id = p.id
-			LEFT JOIN targets_ai_enhanced a ON a.target_id = t.id
-			LEFT JOIN program_metadata md ON md.program_id = p.id
-			WHERE p.disabled = 0 AND p.is_ignored = 0
-			GROUP BY p.id, p.platform, p.handle, p.url, md.bounty_reward_min, md.bounty_reward_max, md.currency, md.reports_count
-			ORDER BY LOWER(p.handle) ASC
-		`
+				md.bounty_reward_min, md.bounty_reward_max, COALESCE(md.currency, ''), md.reports_count,
+				COALESCE(md.title, '')
+				FROM programs p
+				LEFT JOIN targets_raw t ON t.program_id = p.id
+				LEFT JOIN targets_ai_enhanced a ON a.target_id = t.id
+				LEFT JOIN program_metadata md ON md.program_id = p.id
+				WHERE p.disabled = 0 AND p.is_ignored = 0
+				GROUP BY p.id, p.platform, p.handle, p.url, md.bounty_reward_min, md.bounty_reward_max, md.currency, md.reports_count, md.title
+				ORDER BY LOWER(REPLACE(p.handle, '/engagements/', '')) ASC
+			`
 	}
 
 	rows, err := d.sql.QueryContext(ctx, query)
@@ -169,7 +173,7 @@ func (d *DB) ListAllProgramsFlat(ctx context.Context, rawMode bool) ([]ProgramLi
 		var id int64
 		var hasBBP int
 		var bountyMin, bountyMax, reportsCount sql.NullInt64
-		if err := rows.Scan(&id, &p.Platform, &p.Handle, &p.URL, &p.InScopeCount, &p.OutOfScopeCount, &hasBBP, &bountyMin, &bountyMax, &p.Currency, &reportsCount); err != nil {
+		if err := rows.Scan(&id, &p.Platform, &p.Handle, &p.URL, &p.InScopeCount, &p.OutOfScopeCount, &hasBBP, &bountyMin, &bountyMax, &p.Currency, &reportsCount, &p.Title); err != nil {
 			return nil, err
 		}
 		p.IsBBP = hasBBP == 1
@@ -329,10 +333,10 @@ func (d *DB) ListProgramsPaginated(ctx context.Context, opts ProgramListOptions)
 	}
 
 	// Sort column mapping
-	sortColumn := "LOWER(p.handle)"
+	sortColumn := "LOWER(REPLACE(p.handle, '/engagements/', ''))"
 	switch opts.SortBy {
 	case "handle":
-		sortColumn = "LOWER(p.handle)"
+		sortColumn = "LOWER(REPLACE(p.handle, '/engagements/', ''))"
 	case "platform":
 		sortColumn = "LOWER(p.platform)"
 	case "in_scope_count":
@@ -354,14 +358,16 @@ func (d *DB) ListProgramsPaginated(ctx context.Context, opts ProgramListOptions)
 		SELECT p.platform, p.handle, p.url,
 			COALESCE(SUM(CASE WHEN COALESCE(a.in_scope, t.in_scope) = 1 THEN 1 ELSE 0 END), 0) AS in_scope_count,
 			COALESCE(SUM(CASE WHEN COALESCE(a.in_scope, t.in_scope) = 0 THEN 1 ELSE 0 END), 0) AS out_of_scope_count,
-			COALESCE(MAX(t.is_bbp), 0) AS has_bbp
+			COALESCE(MAX(t.is_bbp), 0) AS has_bbp,
+			COALESCE(md.title, '')
 		FROM programs p
 		LEFT JOIN targets_raw t ON t.program_id = p.id
 		LEFT JOIN targets_ai_enhanced a ON a.target_id = t.id
+		LEFT JOIN program_metadata md ON md.program_id = p.id
 		%s
-		GROUP BY p.id, p.platform, p.handle, p.url
+		GROUP BY p.id, p.platform, p.handle, p.url, md.title
 		%s
-		ORDER BY %s %s, LOWER(p.handle) ASC
+		ORDER BY %s %s, LOWER(REPLACE(p.handle, '/engagements/', '')) ASC
 		LIMIT $%d OFFSET $%d
 	`, where, havingClause, sortColumn, sortDir, argIdx, argIdx+1)
 
@@ -377,7 +383,7 @@ func (d *DB) ListProgramsPaginated(ctx context.Context, opts ProgramListOptions)
 	for rows.Next() {
 		var p ProgramListEntry
 		var hasBBP int
-		if err := rows.Scan(&p.Platform, &p.Handle, &p.URL, &p.InScopeCount, &p.OutOfScopeCount, &hasBBP); err != nil {
+		if err := rows.Scan(&p.Platform, &p.Handle, &p.URL, &p.InScopeCount, &p.OutOfScopeCount, &hasBBP, &p.Title); err != nil {
 			return nil, err
 		}
 		p.IsBBP = hasBBP == 1
@@ -630,7 +636,11 @@ func (d *DB) CountPrograms(ctx context.Context, platform string) (int, error) {
 
 // ListAllProgramSlugs returns platform+handle pairs for all active programs (used for sitemap).
 func (d *DB) ListAllProgramSlugs(ctx context.Context) ([]ProgramSlug, error) {
-	query := `SELECT platform, handle FROM programs WHERE is_ignored = 0 ORDER BY platform, handle`
+	query := `SELECT p.platform, p.handle, COALESCE(md.title, '')
+		FROM programs p
+		LEFT JOIN program_metadata md ON md.program_id = p.id
+		WHERE p.is_ignored = 0
+		ORDER BY p.platform, p.handle`
 	rows, err := d.sql.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -640,7 +650,7 @@ func (d *DB) ListAllProgramSlugs(ctx context.Context) ([]ProgramSlug, error) {
 	var slugs []ProgramSlug
 	for rows.Next() {
 		var s ProgramSlug
-		if err := rows.Scan(&s.Platform, &s.Handle); err != nil {
+		if err := rows.Scan(&s.Platform, &s.Handle, &s.Title); err != nil {
 			return nil, err
 		}
 		slugs = append(slugs, s)

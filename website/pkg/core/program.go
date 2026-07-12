@@ -26,6 +26,15 @@ func displayHandle(platform, handle string) string {
 	return handle
 }
 
+// programDisplayTitle returns the human-readable program title from metadata
+// when available, falling back to displayHandle otherwise.
+func programDisplayTitle(platform, handle string, md *scope.ProgramMetadata) string {
+	if md != nil && md.Title != "" {
+		return md.Title
+	}
+	return displayHandle(platform, handle)
+}
+
 // programDetailHandler handles requests for /program/{platform}/{handle}
 func programDetailHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/program/")
@@ -121,7 +130,7 @@ func programDetailHandler(w http.ResponseWriter, r *http.Request) {
 
 	md, _ := db.GetProgramMetadata(ctx, program.ID)
 
-	title := fmt.Sprintf("%s on %s - Bug Bounty Scope | bbscope.com", displayHandle(program.Platform, program.Handle), capitalizedPlatform(program.Platform))
+	title := fmt.Sprintf("%s on %s - Bug Bounty Scope | bbscope.com", programDisplayTitle(program.Platform, program.Handle, md), capitalizedPlatform(program.Platform))
 	description := buildProgramDescription(program, targets, inScopeCount, isBBP)
 	canonicalURL := fmt.Sprintf("/program/%s/%s", url.PathEscape(strings.ToLower(program.Platform)), url.PathEscape(program.Handle))
 
@@ -159,7 +168,7 @@ func ProgramDetailContent(program *storage.Program, targets []storage.ProgramTar
 				g.Text(capitalizedPlatform(program.Platform)),
 			),
 			Span(Class("mx-2 text-zinc-600"), g.Raw(`<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>`)),
-			Span(Class("text-zinc-200"), g.Text(displayHandle(program.Platform, program.Handle))),
+			Span(Class("text-zinc-200"), g.Text(programDisplayTitle(program.Platform, program.Handle, md))),
 		),
 
 		// Program removed banner
@@ -192,7 +201,7 @@ func ProgramDetailContent(program *storage.Program, targets []storage.ProgramTar
 		// Program header
 		Div(Class("flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"),
 			Div(
-				H1(Class("text-2xl md:text-3xl font-bold text-white"), g.Text(displayHandle(program.Platform, program.Handle))),
+				H1(Class("text-2xl md:text-3xl font-bold text-white"), g.Text(programDisplayTitle(program.Platform, program.Handle, md))),
 				Div(Class("flex items-center gap-3 mt-2"),
 					platformBadge(program.Platform),
 					A(Href(programURL), Target("_blank"), Rel("noopener noreferrer"),
@@ -1052,6 +1061,10 @@ func platformBadge(platform string) g.Node {
 		colors = "bg-purple-900/50 text-purple-300 border border-purple-800"
 	case "ywh", "yeswehack":
 		colors = "bg-yellow-900/50 text-yellow-300 border border-yellow-800"
+	case "yog", "yogosha":
+		colors = "bg-cyan-900/50 text-cyan-300 border border-cyan-800"
+	case "bbch", "bugbounty.ch":
+		colors = "bg-emerald-900/50 text-emerald-300 border border-emerald-800"
 	}
 	return Span(Class("inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold rounded-md "+colors), g.Text(capitalizedPlatform(platform)))
 }
@@ -1067,6 +1080,10 @@ func capitalizedPlatform(platform string) string {
 		return "Intigriti"
 	case "ywh", "yeswehack":
 		return "YesWeHack"
+	case "yog", "yogosha":
+		return "Yogosha"
+	case "bbch", "bugbounty.ch":
+		return "BugBounty.ch"
 	default:
 		return platform
 	}

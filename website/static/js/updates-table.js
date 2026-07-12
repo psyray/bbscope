@@ -231,6 +231,8 @@
       case 'bc': case 'bugcrowd': colors = 'bg-orange-900/50 text-orange-300 border border-orange-800'; break;
       case 'it': case 'intigriti': colors = 'bg-purple-900/50 text-purple-300 border border-purple-800'; break;
       case 'ywh': case 'yeswehack': colors = 'bg-yellow-900/50 text-yellow-300 border border-yellow-800'; break;
+      case 'yog': case 'yogosha': colors = 'bg-cyan-900/50 text-cyan-300 border border-cyan-800'; break;
+      case 'bbch': case 'bugbounty.ch': colors = 'bg-emerald-900/50 text-emerald-300 border border-emerald-800'; break;
     }
     return '<span class="inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold rounded-md ' + colors + '">' + escapeHTML(capitalizedPlatform(platform)) + '</span>';
   }
@@ -241,6 +243,8 @@
       case 'bc': case 'bugcrowd': return 'Bugcrowd';
       case 'it': case 'intigriti': return 'Intigriti';
       case 'ywh': case 'yeswehack': return 'YesWeHack';
+      case 'yog': case 'yogosha': return 'Yogosha';
+      case 'bbch': case 'bugbounty.ch': return 'BugBounty.ch';
       default: return p;
     }
   }
@@ -258,7 +262,7 @@
       var internalURL = '/program/' + encodeURIComponent(u.platform.toLowerCase()) + '/' + encodeURIComponent(u.handle);
       return '<div class="flex items-center gap-2">' +
         '<a href="' + escapeAttr(u.program_url) + '" target="_blank" rel="noopener noreferrer" class="text-zinc-500 hover:text-cyan-400 transition-colors flex-shrink-0" title="Open on ' + escapeAttr(capitalizedPlatform(u.platform)) + '">' + externalIcon + '</a>' +
-        '<a href="' + escapeAttr(internalURL) + '" class="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors">' + escapeHTML(displayHandle(u.platform, u.handle)) + '</a>' +
+        '<a href="' + escapeAttr(internalURL) + '" class="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors">' + escapeHTML(u.title || displayHandle(u.platform, u.handle)) + '</a>' +
         '</div>';
     }
     return '<a href="' + escapeAttr(u.program_url) + '" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors" title="' + escapeAttr(u.program_url) + '">' + escapeHTML(truncateMiddle(u.program_url, 40)) + '</a>';

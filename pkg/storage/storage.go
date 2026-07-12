@@ -1514,9 +1514,13 @@ func (d *DB) ListChangesPaginated(ctx context.Context, opts ChangesPageOptions) 
 	// Fetch page
 	offset := (opts.Page - 1) * opts.PerPage
 	dataQuery := fmt.Sprintf(`SELECT c.occurred_at, c.program_url, c.platform, c.handle,
+		COALESCE(md.title, ''),
 		c.target_normalized, c.target_raw, c.target_ai_normalized,
 		c.category, c.in_scope, c.is_bbp, c.change_type
-		FROM scope_changes c %s
+		FROM scope_changes c
+		LEFT JOIN programs p ON LOWER(p.platform) = LOWER(c.platform) AND LOWER(p.handle) = LOWER(c.handle)
+		LEFT JOIN program_metadata md ON md.program_id = p.id
+		%s
 		ORDER BY c.occurred_at DESC
 		LIMIT $%d OFFSET $%d`, where, argIdx, argIdx+1)
 	args = append(args, opts.PerPage, offset)
@@ -1532,6 +1536,7 @@ func (d *DB) ListChangesPaginated(ctx context.Context, opts ChangesPageOptions) 
 		var c Change
 		var inScopeInt, isBBPInt int
 		if err := rows.Scan(&c.OccurredAt, &c.ProgramURL, &c.Platform, &c.Handle,
+			&c.Title,
 			&c.TargetNormalized, &c.TargetRaw, &c.TargetAINormalized,
 			&c.Category, &inScopeInt, &isBBPInt, &c.ChangeType); err != nil {
 			return nil, fmt.Errorf("scanning change row: %w", err)

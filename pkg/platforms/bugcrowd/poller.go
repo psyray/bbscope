@@ -84,7 +84,7 @@ func (p *Poller) FetchProgramScope(ctx context.Context, handle string, opts plat
 	cats := "all"
 	pd, err := GetProgramScope(handle, cats, p.token)
 	if err != nil {
-		return scope.ProgramData{Url: strings.TrimPrefix(handle, "/")}, err
+		return scope.ProgramData{Url: "https://bugcrowd.com/engagements/" + strings.TrimPrefix(handle, "/")}, err
 	}
 
 	// Set IsBBP on all targets based on whether the handle was listed as bug_bounty

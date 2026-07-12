@@ -217,8 +217,8 @@
     list.sort(function (a, b) {
       var va, vb;
       if (key === "handle") {
-        va = a.handle.toLowerCase();
-        vb = b.handle.toLowerCase();
+        va = (a.title || a.handle).toLowerCase().replace(/^\/engagements\//, '');
+        vb = (b.title || b.handle).toLowerCase().replace(/^\/engagements\//, '');
       } else if (key === "platform") {
         va = a.platform.toLowerCase();
         vb = b.platform.toLowerCase();
@@ -241,8 +241,8 @@
 
       // Secondary sort by handle
       if (key !== "handle") {
-        var ha = a.handle.toLowerCase();
-        var hb = b.handle.toLowerCase();
+        var ha = a.handle.toLowerCase().replace(/^\/engagements\//, '');
+        var hb = b.handle.toLowerCase().replace(/^\/engagements\//, '');
         if (ha < hb) return -1;
         if (ha > hb) return 1;
       }
@@ -254,16 +254,20 @@
 
   // --- Platform helpers ---
   var platformNames = {
-    h1: "HackerOne",
-    bc: "Bugcrowd",
-    it: "Intigriti",
-    ywh: "YesWeHack",
+    h1: 'HackerOne',
+    bc: 'Bugcrowd',
+    it: 'Intigriti',
+    ywh: 'YesWeHack',
+    yog: 'Yogosha',
+    bbch: 'BugBounty.ch',
   };
   var platformColors = {
-    h1: "bg-blue-900/50 text-blue-300 border border-blue-800",
-    bc: "bg-orange-900/50 text-orange-300 border border-orange-800",
-    it: "bg-purple-900/50 text-purple-300 border border-purple-800",
-    ywh: "bg-yellow-900/50 text-yellow-300 border border-yellow-800",
+    h1: 'bg-blue-900/50 text-blue-300 border border-blue-800',
+    bc: 'bg-orange-900/50 text-orange-300 border border-orange-800',
+    it: 'bg-purple-900/50 text-purple-300 border border-purple-800',
+    ywh: 'bg-yellow-900/50 text-yellow-300 border border-yellow-800',
+    yog: 'bg-cyan-900/50 text-cyan-300 border border-cyan-800',
+    bbch: 'bg-emerald-900/50 text-emerald-300 border border-emerald-800',
   };
 
   function platformBadgeHTML(plat) {
@@ -425,7 +429,7 @@
         html +=
           '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>';
         html += "</a>";
-        var displayHandle = p.handle.replace(/^\/engagements\//, "");
+        var displayHandle = p.title || p.handle.replace(/^\/engagements\//, "");
         html +=
           '<span class="font-medium text-zinc-100">' +
           escapeHTML(displayHandle) +

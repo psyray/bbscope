@@ -615,7 +615,7 @@ func init() {
 	changesCmd.Flags().Int("limit", 50, "Number of recent changes to show")
 	changesCmd.Flags().String("since", "", "Show changes since: today, yesterday, 7d, 30d, 90d, 1y, or YYYY-MM-DD")
 	changesCmd.Flags().String("until", "", "Show changes until: today, yesterday, 7d, 30d, 90d, 1y, or YYYY-MM-DD")
-	printCmd.Flags().String("platform", "all", "Comma-separated platforms (h1,bc,it,ywh,immunefi) or 'all'")
+	printCmd.Flags().String("platform", "all", "Comma-separated platforms (h1,bc,it,ywh,immunefi,yog,bbch) or 'all'")
 	printCmd.Flags().String("program", "", "Filter by program handle or full URL")
 	printCmd.Flags().Bool("oos", false, "Include out-of-scope elements")
 	printCmd.Flags().String("since", "", "Only include entries/changes since this RFC3339 timestamp")

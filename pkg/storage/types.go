@@ -36,6 +36,7 @@ type Change struct {
 	ProgramURL         string
 	Platform           string
 	Handle             string
+	Title              string // human-readable program title from program_metadata (may be empty)
 	TargetNormalized   string
 	TargetRaw          string
 	TargetAINormalized string

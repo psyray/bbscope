@@ -618,7 +618,7 @@ func GetProgramHandles(sessionToken string, engagementType string, pvtOnly bool)
 
 		// Iterating over each element in the programs array
 		result.ForEach(func(key, value gjson.Result) bool {
-			programURL := normalizeBugcrowdHandle(value.Get("briefUrl").String())
+			programURL := strings.TrimPrefix(normalizeBugcrowdHandle(value.Get("briefUrl").String()), "/engagements/")
 			accessStatus := value.Get("accessStatus").String()
 			if programURL == "" {
 				return true
@@ -654,9 +654,16 @@ func GetProgramHandles(sessionToken string, engagementType string, pvtOnly bool)
 
 func GetProgramScope(handle string, categories string, token string) (pData scope.ProgramData, err error) {
 	handle = normalizeBugcrowdHandle(handle)
-	isEngagement := strings.HasPrefix(handle, "/engagements/")
-	if isEngagement {
+
+	// Backwards-compat dispatch: handles coming from ListProgramHandles are bare
+	// engagement slugs (e.g. "agile-pulse"). A handle that still starts with
+	// "/engagements/" is the old form; any other "/"-prefixed path is a legacy
+	// non-engagement program URL dispatched via extractScopeFromTargetGroups.
+	isEngagement := true
+	if strings.HasPrefix(handle, "/engagements/") {
 		handle = strings.TrimPrefix(handle, "/engagements/")
+	} else if strings.HasPrefix(handle, "/") {
+		isEngagement = false
 	}
 
 	if isEngagement {

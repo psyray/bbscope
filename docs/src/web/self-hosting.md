@@ -38,6 +38,12 @@ The web server reads platform credentials from environment variables:
 | `YWH_EMAIL` | YesWeHack email |
 | `YWH_PASSWORD` | YesWeHack password |
 | `YWH_OTP` | YesWeHack TOTP secret |
+| `YOG_EMAIL` | Yogosha email |
+| `YOG_PASSWORD` | Yogosha password |
+| `YOG_OTP` | Yogosha TOTP secret |
+| `BBCH_EMAIL` | BugBounty.ch email |
+| `BBCH_PASSWORD` | BugBounty.ch password |
+| `BBCH_OTP` | BugBounty.ch TOTP secret |
 | `OPENAI_API_KEY` | OpenAI API key for AI normalization |
 | `OPENAI_MODEL` | Model name (default: `gpt-4.1-mini`) |
 
