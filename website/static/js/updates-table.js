@@ -232,6 +232,7 @@
       case 'it': case 'intigriti': colors = 'bg-purple-900/50 text-purple-300 border border-purple-800'; break;
       case 'ywh': case 'yeswehack': colors = 'bg-yellow-900/50 text-yellow-300 border border-yellow-800'; break;
       case 'yog': case 'yogosha': colors = 'bg-cyan-900/50 text-cyan-300 border border-cyan-800'; break;
+      case 'bbch': case 'bugbounty.ch': colors = 'bg-emerald-900/50 text-emerald-300 border border-emerald-800'; break;
     }
     return '<span class="inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold rounded-md ' + colors + '">' + escapeHTML(capitalizedPlatform(platform)) + '</span>';
   }
@@ -243,6 +244,7 @@
       case 'it': case 'intigriti': return 'Intigriti';
       case 'ywh': case 'yeswehack': return 'YesWeHack';
       case 'yog': case 'yogosha': return 'Yogosha';
+      case 'bbch': case 'bugbounty.ch': return 'BugBounty.ch';
       default: return p;
     }
   }

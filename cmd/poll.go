@@ -12,6 +12,7 @@ import (
 	"github.com/sw33tLie/bbscope/v2/internal/utils"
 	"github.com/sw33tLie/bbscope/v2/pkg/ai"
 	"github.com/sw33tLie/bbscope/v2/pkg/platforms"
+	bbchplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/bugbountych"
 	bcplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/bugcrowd"
 	h1platform "github.com/sw33tLie/bbscope/v2/pkg/platforms/hackerone"
 	itplatform "github.com/sw33tLie/bbscope/v2/pkg/platforms/intigriti"
@@ -112,6 +113,22 @@ var pollCmd = &cobra.Command{
 			}
 		} else {
 			utils.Log.Info("Skipping Yogosha: email, password, or otpsecret not found in config.")
+		}
+
+		// BugBounty.ch
+		bbchEmail := viper.GetString("bugbountych.email")
+		bbchPass := viper.GetString("bugbountych.password")
+		bbchOTP := viper.GetString("bugbountych.otpsecret")
+		if bbchEmail != "" && bbchPass != "" && bbchOTP != "" {
+			bbchPoller := &bbchplatform.Poller{}
+			authCfg := platforms.AuthConfig{Email: bbchEmail, Password: bbchPass, OtpSecret: bbchOTP, Proxy: proxyURL}
+			if err := bbchPoller.Authenticate(cmd.Context(), authCfg); err != nil {
+				utils.Log.Errorf("BugBounty.ch auth failed: %v", err)
+			} else {
+				pollers = append(pollers, bbchPoller)
+			}
+		} else {
+			utils.Log.Info("Skipping BugBounty.ch: email, password, or otpsecret not found in config.")
 		}
 
 		if len(pollers) == 0 {

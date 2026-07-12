@@ -259,6 +259,7 @@
     it: 'Intigriti',
     ywh: 'YesWeHack',
     yog: 'Yogosha',
+    bbch: 'BugBounty.ch',
   };
   var platformColors = {
     h1: 'bg-blue-900/50 text-blue-300 border border-blue-800',
@@ -266,6 +267,7 @@
     it: 'bg-purple-900/50 text-purple-300 border border-purple-800',
     ywh: 'bg-yellow-900/50 text-yellow-300 border border-yellow-800',
     yog: 'bg-cyan-900/50 text-cyan-300 border border-cyan-800',
+    bbch: 'bg-emerald-900/50 text-emerald-300 border border-emerald-800',
   };
 
   function platformBadgeHTML(plat) {

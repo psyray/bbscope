@@ -20,7 +20,7 @@
 > *   **Centralized Polling**: Poll multiple platforms in one go.
 > *   **Smart Scope Extraction**: Use `db get` to fetch normalized targets by category (wildcards, cidrs, etc.).
 
-**bbscope** is a powerful scope aggregation tool for bug bounty hunters, designed to fetch, store, and manage program scopes from HackerOne, Bugcrowd, Intigriti, YesWeHack, Immunefi, and Yogosha right from your command line.
+**bbscope** is a powerful scope aggregation tool for bug bounty hunters, designed to fetch, store, and manage program scopes from HackerOne, Bugcrowd, Intigriti, YesWeHack, Immunefi, Yogosha, and BugBounty.ch right from your command line.
 
 Visit [bbscope.com](https://bbscope.com/) to explore an hourly-updated list of public scopes from all supported platforms, stats, and more!
 
@@ -104,6 +104,10 @@ yogosha:
   email: ""
   password: ""
   otpsecret: "" # Your 2FA secret key string
+bugbountych:
+  email: ""
+  password: ""
+  otpsecret: "" # Your 2FA secret key string
 ai:
   provider: "openai"
   api_key: "" # or set OPENAI_API_KEY env var
@@ -126,6 +130,8 @@ Alternatively, you can provide credentials directly via command-line flags when 
 | | `--email`, `--password`, `--otp-secret`| Your YesWeHack login credentials. |
 | `poll yog` | `--token` | A live Yogosha bearer token. Use as an alternative to email/pass/otp. |
 | | `--email`, `--password`, `--otp-secret`| Your Yogosha login credentials. |
+| `poll bbch` | `--token` | A live BugBounty.ch bearer token. Use as an alternative to email/pass/otp. |
+| | `--email`, `--password`, `--otp-secret`| Your BugBounty.ch login credentials. |
 
 **Database Configuration (Optional):**
 
@@ -179,6 +185,7 @@ The `poll` command fetches scope data from the platforms. You can poll all platf
 - `bbscope poll it`: Polls Intigriti.
 - `bbscope poll ywh`: Polls YesWeHack.
 - `bbscope poll yog`: Polls Yogosha.
+- `bbscope poll bbch`: Polls BugBounty.ch.
 - `bbscope poll immunefi`: Polls Immunefi (no authentication required).
 
 
@@ -391,7 +398,13 @@ bbscope poll ywh --token "your_jwt_token"
 bbscope poll yog --email "your@email.com" --password "your_password" --otp-secret "your_totp_secret"
 ```
 
-**12. Immunefi Polling**
+**12. BugBounty.ch Polling**
+
+```bash
+bbscope poll bbch --email "your@email.com" --password "your_password" --otp-secret "your_totp_secret"
+```
+
+**13. Immunefi Polling**
 
 ```bash
 bbscope poll immunefi

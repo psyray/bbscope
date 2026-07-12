@@ -58,6 +58,7 @@ All platform credentials are optional. Unconfigured platforms are simply skipped
 | Intigriti | `IT_TOKEN` | Bearer token |
 | YesWeHack | `YWH_EMAIL`, `YWH_PASSWORD`, `YWH_OTP` | Email + password + OTP |
 | Yogosha | `YOG_EMAIL`, `YOG_PASSWORD`, `YOG_OTP` | Email + password + OTP |
+| BugBounty.ch | `BBCH_EMAIL`, `BBCH_PASSWORD`, `BBCH_OTP` | Email + password + OTP |
 
 ### AI normalization (optional)
 

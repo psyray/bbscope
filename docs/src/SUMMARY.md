@@ -36,6 +36,7 @@
 - [Intigriti](./platforms/intigriti.md)
 - [YesWeHack](./platforms/yeswehack.md)
 - [Yogosha](./platforms/yogosha.md)
+- [BugBounty.ch](./platforms/bugbounty-ch.md)
 - [Immunefi](./platforms/immunefi.md)
 
 # AI Normalization
