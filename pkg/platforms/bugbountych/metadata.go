@@ -166,9 +166,10 @@ func parseQuillBulletItems(deltaJSON string) []string {
 	return items
 }
 
-// userAgentRe matches "User-Agent: <token>" or "User-Agent <token>" patterns
-// in the notes text, capturing the token value.
-var userAgentRe = regexp.MustCompile(`(?i)User-Agent[:\s]+([A-Za-z0-9_.\-]+)`)
+// userAgentRe matches "User-Agent: <token>", "User-Agent <token>",
+// or "User Agent <token>" (without hyphen) patterns in the notes text,
+// capturing the token value.
+var userAgentRe = regexp.MustCompile(`(?i)User[-_]?Agent[:\s]+([A-Za-z0-9_.\-]+)`)
 
 // extractUserAgent scans the notes plain text for a User-Agent mention and
 // returns the following token, or "" if not found.

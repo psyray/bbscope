@@ -14,7 +14,7 @@ import (
 
 const (
 	apiBase       = "https://api-hacker.bugbounty.ch"
-	programWebURL = "https://app.bugbounty.ch/engagement/"
+	programWebURL = "https://app.bugbounty.ch/hacker/engagement/details/"
 )
 
 // ipv4Re matches dotted-quad IPv4 addresses (with optional trailing CIDR
@@ -25,7 +25,7 @@ var ipv4Re = regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`)
 // Poller implements platforms.PlatformPoller for BugBounty.ch.
 type Poller struct {
 	token  string
-	bbpSet map[string]bool // tracks which engagement IDs are bounty programs
+	bbpSet map[string]bool // tracks which engagement UUIDs offer monetary rewards
 }
 
 // NewPoller returns a BugBounty.ch poller pre-configured with a bearer token.
@@ -54,10 +54,11 @@ func (p *Poller) Authenticate(ctx context.Context, cfg platforms.AuthConfig) err
 	return nil
 }
 
-// ListProgramHandles fetches engagement IDs from BugBounty.ch. When
+// ListProgramHandles fetches engagement UUIDs from BugBounty.ch. When
 // opts.PrivateOnly is set, it fetches only programs the researcher has been
-// invited to; otherwise it fetches all active (state=1) public programs. The
-// handle returned for each program is its engagement UUID.
+// invited to; otherwise it fetches all active (state=1) public programs.
+// The handle returned is the engagement UUID (e.g.
+// "9eeb7834-5382-434e-9e02-9d43a9e5125").
 func (p *Poller) ListProgramHandles(ctx context.Context, opts platforms.PollOptions) ([]string, error) {
 	p.bbpSet = map[string]bool{}
 	var handles []string
@@ -110,7 +111,8 @@ func (p *Poller) ListProgramHandles(ctx context.Context, opts platforms.PollOpti
 }
 
 // FetchProgramScope fetches a single engagement's scope and rich metadata.
-// The handle is the engagement UUID returned by ListProgramHandles.
+// The handle is the engagement UUID (e.g.
+// "9eeb7834-5382-434e-9e02-9d43a9e5125").
 //
 // For each scope group returned by the scopes/list endpoint, a follow-up XHR
 // call is made to scopes/assets?scopeId=<id> to retrieve the individual
@@ -118,7 +120,7 @@ func (p *Poller) ListProgramHandles(ctx context.Context, opts platforms.PollOpti
 // are also mined from the engagement's outOfScope Quill Delta text as a
 // fallback.
 func (p *Poller) FetchProgramScope(ctx context.Context, handle string, opts platforms.PollOptions) (scope.ProgramData, error) {
-	pData := scope.ProgramData{Url: programWebURL + handle}
+	pData := scope.ProgramData{Url: programWebURL + handle + "/basic-data"}
 	authHeaders := []whttp.WHTTPHeader{{Name: "Authorization", Value: "Bearer " + p.token}}
 
 	// Scope groups (per-group bounty grid + assetGroup metadata).

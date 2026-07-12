@@ -217,8 +217,8 @@
     list.sort(function (a, b) {
       var va, vb;
       if (key === "handle") {
-        va = a.handle.toLowerCase().replace(/^\/engagements\//, '');
-        vb = b.handle.toLowerCase().replace(/^\/engagements\//, '');
+        va = (a.title || a.handle).toLowerCase().replace(/^\/engagements\//, '');
+        vb = (b.title || b.handle).toLowerCase().replace(/^\/engagements\//, '');
       } else if (key === "platform") {
         va = a.platform.toLowerCase();
         vb = b.platform.toLowerCase();
@@ -429,7 +429,7 @@
         html +=
           '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>';
         html += "</a>";
-        var displayHandle = p.handle.replace(/^\/engagements\//, "");
+        var displayHandle = p.title || p.handle.replace(/^\/engagements\//, "");
         html +=
           '<span class="font-medium text-zinc-100">' +
           escapeHTML(displayHandle) +

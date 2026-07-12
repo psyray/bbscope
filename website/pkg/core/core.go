@@ -737,6 +737,13 @@ func programsIndexHandler(w http.ResponseWriter, r *http.Request) {
 // ProgramsIndexContent renders a server-rendered list of all program links, grouped by platform.
 // This gives crawlers a direct HTML path to every program page for better indexing.
 func ProgramsIndexContent(slugs []storage.ProgramSlug) g.Node {
+	// slugDisplayTitle returns the metadata title when present, else the stripped handle.
+	slugDisplayTitle := func(s storage.ProgramSlug) string {
+		if s.Title != "" {
+			return s.Title
+		}
+		return displayHandle(s.Platform, s.Handle)
+	}
 	// Group by platform (same order as elsewhere: h1, bc, it, ywh)
 	platformOrder := []string{"h1", "bc", "it", "ywh", "yog", "bbch"}
 	platformLabels := map[string]string{
@@ -766,7 +773,7 @@ func ProgramsIndexContent(slugs []storage.ProgramSlug) g.Node {
 			)
 			links = append(links,
 				Li(
-					A(Href(path), Class("text-cyan-400 hover:text-cyan-300 hover:underline"), g.Text(displayHandle(s.Platform, s.Handle))),
+					A(Href(path), Class("text-cyan-400 hover:text-cyan-300 hover:underline"), g.Text(slugDisplayTitle(s))),
 				),
 			)
 		}
@@ -790,7 +797,7 @@ func ProgramsIndexContent(slugs []storage.ProgramSlug) g.Node {
 			)
 			links = append(links,
 				Li(
-					A(Href(path), Class("text-cyan-400 hover:text-cyan-300 hover:underline"), g.Text(displayHandle(s.Platform, s.Handle))),
+					A(Href(path), Class("text-cyan-400 hover:text-cyan-300 hover:underline"), g.Text(slugDisplayTitle(s))),
 				),
 			)
 		}

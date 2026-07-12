@@ -262,7 +262,7 @@
       var internalURL = '/program/' + encodeURIComponent(u.platform.toLowerCase()) + '/' + encodeURIComponent(u.handle);
       return '<div class="flex items-center gap-2">' +
         '<a href="' + escapeAttr(u.program_url) + '" target="_blank" rel="noopener noreferrer" class="text-zinc-500 hover:text-cyan-400 transition-colors flex-shrink-0" title="Open on ' + escapeAttr(capitalizedPlatform(u.platform)) + '">' + externalIcon + '</a>' +
-        '<a href="' + escapeAttr(internalURL) + '" class="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors">' + escapeHTML(displayHandle(u.platform, u.handle)) + '</a>' +
+        '<a href="' + escapeAttr(internalURL) + '" class="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors">' + escapeHTML(u.title || displayHandle(u.platform, u.handle)) + '</a>' +
         '</div>';
     }
     return '<a href="' + escapeAttr(u.program_url) + '" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 hover:underline transition-colors" title="' + escapeAttr(u.program_url) + '">' + escapeHTML(truncateMiddle(u.program_url, 40)) + '</a>';

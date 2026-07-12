@@ -18,15 +18,14 @@ const (
 
 // Poller implements platforms.PlatformPoller for Yogosha.
 type Poller struct {
-	token      string
-	bbpSet     map[string]bool   // tracks which program names offer monetary rewards
-	handleToID map[string]string // maps program name (handle) → program ID for API calls
+	token  string
+	bbpSet map[string]bool // tracks which program IDs offer monetary rewards
 }
 
 // NewPoller returns a Yogosha poller pre-configured with a bearer token.
 // Use Authenticate instead when logging in with email/password+TOTP.
 func NewPoller(token string) *Poller {
-	return &Poller{token: token, bbpSet: map[string]bool{}, handleToID: map[string]string{}}
+	return &Poller{token: token, bbpSet: map[string]bool{}}
 }
 
 func (p *Poller) Name() string { return "yog" }
@@ -54,7 +53,6 @@ func (p *Poller) Authenticate(ctx context.Context, cfg platforms.AuthConfig) err
 // returns all visible (public + open-audience) programs.
 func (p *Poller) ListProgramHandles(ctx context.Context, opts platforms.PollOptions) ([]string, error) {
 	p.bbpSet = map[string]bool{}
-	p.handleToID = map[string]string{}
 	if opts.PrivateOnly {
 		return p.listInvitedPrograms(opts)
 	}
@@ -86,14 +84,12 @@ func (p *Poller) listPublicPrograms(opts platforms.PollOptions) ([]string, error
 				return true
 			}
 			id := prog.Get("id").String()
-			name := prog.Get("name").String()
-			if id == "" || name == "" {
+			if id == "" {
 				return true
 			}
-			handles = append(handles, name)
-			p.handleToID[name] = id
+			handles = append(handles, id)
 			if isBBP {
-				p.bbpSet[name] = true
+				p.bbpSet[id] = true
 			}
 			return true
 		})
@@ -128,14 +124,12 @@ func (p *Poller) listInvitedPrograms(opts platforms.PollOptions) ([]string, erro
 				return true
 			}
 			id := invite.Get("program.id").String()
-			name := invite.Get("program.name").String()
-			if id == "" || name == "" {
+			if id == "" {
 				return true
 			}
 			// Invite payload lacks reward info; include all accepted invites.
 			// BountyOnly filtering happens in FetchProgramScope via the detail body.
-			handles = append(handles, name)
-			p.handleToID[name] = id
+			handles = append(handles, id)
 			return true
 		})
 
@@ -145,16 +139,11 @@ func (p *Poller) listInvitedPrograms(opts platforms.PollOptions) ([]string, erro
 	return handles, nil
 }
 
-// FetchProgramScope fetches a single program's scope. The handle is the program
-// name (human-readable); the opaque ID is looked up from the handleToID cache
-// populated by ListProgramHandles.
+// FetchProgramScope fetches a single program's scope. The handle is the
+// opaque Yogosha program ID (e.g. "3LMDR2Fa3MuwY1zP4G8Kfw").
 func (p *Poller) FetchProgramScope(ctx context.Context, handle string, opts platforms.PollOptions) (scope.ProgramData, error) {
-	id := p.handleToID[handle]
-	if id == "" {
-		return scope.ProgramData{}, fmt.Errorf("yogosha: no ID cached for handle %q", handle)
-	}
-	programAPIURL := fmt.Sprintf("%s/programs/%s?embed=content%%2Caudiences", apiBase, id)
-	pData := scope.ProgramData{Url: programWebURL + id}
+	programAPIURL := fmt.Sprintf("%s/programs/%s?embed=content%%2Caudiences", apiBase, handle)
+	pData := scope.ProgramData{Url: programWebURL + handle}
 
 	res, err := whttp.SendHTTPRequest(&whttp.WHTTPReq{
 		Method:  "GET",
@@ -168,7 +157,7 @@ func (p *Poller) FetchProgramScope(ctx context.Context, handle string, opts plat
 		return pData, fmt.Errorf("invalid or expired Yogosha token")
 	}
 	if res.StatusCode == 404 {
-		return pData, fmt.Errorf("yogosha program not found: %s", id)
+		return pData, fmt.Errorf("yogosha program not found: %s", handle)
 	}
 
 	body := res.BodyString
