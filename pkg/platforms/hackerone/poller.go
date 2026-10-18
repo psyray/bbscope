@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -146,15 +147,12 @@ func (p *Poller) FetchProgramScope(ctx context.Context, handle string, opts plat
 		assetCount := int(gjson.Get(res.BodyString, "data.#").Int())
 		isDumpAll := categoryStrings == nil
 
-		for i := 0; i < assetCount; i++ {
+		for i := range assetCount {
 			assetCategory := strings.ToLower(gjson.Get(res.BodyString, "data."+strconv.Itoa(i)+".attributes.asset_type").Str)
 			catFound := isDumpAll
 			if !isDumpAll {
-				for _, cat := range categoryStrings {
-					if cat == assetCategory {
-						catFound = true
-						break
-					}
+				if slices.Contains(categoryStrings, assetCategory) {
+					catFound = true
 				}
 			}
 

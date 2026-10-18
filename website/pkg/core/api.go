@@ -2,7 +2,8 @@ package core
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"log"
 	"net/http"
@@ -39,7 +40,7 @@ func invalidateProgramsCache() {
 }
 
 type programsAPIResponse struct {
-	Programs    json.RawMessage `json:"programs"`
+	Programs    jsontext.Value `json:"programs"`
 	TotalCount  int             `json:"total_count"`
 	GeneratedAt string          `json:"generated_at"`
 }
@@ -427,7 +428,7 @@ func apiTargetsHandler(w http.ResponseWriter, r *http.Request) {
 		} else {
 			items = []string{}
 		}
-		json.NewEncoder(w).Encode(items)
+		json.MarshalWrite(w, items)
 		return
 	}
 

@@ -56,10 +56,10 @@ func GetPollerStatuses() map[string]*PollerStatus {
 // stdLogger adapts stdlib log.Printf to the polling.Logger interface.
 type stdLogger struct{}
 
-func (stdLogger) Infof(format string, args ...interface{})  { log.Printf("[INFO] "+format, args...) }
-func (stdLogger) Warnf(format string, args ...interface{})  { log.Printf("[WARN] "+format, args...) }
-func (stdLogger) Errorf(format string, args ...interface{}) { log.Printf("[ERROR] "+format, args...) }
-func (stdLogger) Debugf(format string, args ...interface{}) { log.Printf("[DEBUG] "+format, args...) }
+func (stdLogger) Infof(format string, args ...any)  { log.Printf("[INFO] "+format, args...) }
+func (stdLogger) Warnf(format string, args ...any)  { log.Printf("[WARN] "+format, args...) }
+func (stdLogger) Errorf(format string, args ...any) { log.Printf("[ERROR] "+format, args...) }
+func (stdLogger) Debugf(format string, args ...any) { log.Printf("[DEBUG] "+format, args...) }
 
 // startBackgroundPoller runs periodic poll cycles in the background.
 func startBackgroundPoller(cfg ServerConfig) {

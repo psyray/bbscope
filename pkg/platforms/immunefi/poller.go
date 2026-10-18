@@ -26,7 +26,7 @@ func (p *Poller) Authenticate(ctx context.Context, cfg platforms.AuthConfig) err
 // It will retry up to maxRetries times with exponential backoff.
 func fetchWithRetry(url string) (*whttp.WHTTPRes, error) {
 	var lastErr error
-	for attempt := 0; attempt < maxRetries; attempt++ {
+	for attempt := range maxRetries {
 		res, err := whttp.SendHTTPRequest(
 			&whttp.WHTTPReq{
 				Method: "GET",
@@ -46,10 +46,7 @@ func fetchWithRetry(url string) (*whttp.WHTTPRes, error) {
 
 		if res.StatusCode == 429 {
 			// Rate limited, wait with exponential backoff and retry
-			backoff := time.Duration(attempt+1) * 2 * time.Second
-			if backoff > 30*time.Second {
-				backoff = 30 * time.Second
-			}
+			backoff := min(time.Duration(attempt+1)*2*time.Second, 30*time.Second)
 			time.Sleep(backoff)
 			continue
 		}

@@ -3,7 +3,7 @@ package bugcrowd
 import (
 	"context"
 	"crypto/tls"
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"io"
@@ -12,6 +12,7 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -187,7 +188,7 @@ func Login(email, password, otpSecret, proxy string) (string, error) {
 	stateToken := ""
 	stateHandle := ""
 
-	introspectReqBody := map[string]interface{}{}
+	introspectReqBody := map[string]any{}
 	if oktaStateTokenFromPage != "" {
 		introspectReqBody["stateToken"] = oktaStateTokenFromPage
 	}
@@ -222,7 +223,7 @@ func Login(email, password, otpSecret, proxy string) (string, error) {
 	requiresPasswordChallenge := authenticatorRequiresPassword(introspectRes.BodyString)
 
 	if remediationExists(introspectRes.BodyString, "identify") {
-		identifyBody := map[string]interface{}{
+		identifyBody := map[string]any{
 			"identifier": email,
 		}
 		addStateFields(identifyBody, stateHandle, stateToken)
@@ -256,8 +257,8 @@ func Login(email, password, otpSecret, proxy string) (string, error) {
 	}
 
 	if requiresPasswordChallenge {
-		passwordChallengeBody := map[string]interface{}{
-			"credentials": map[string]interface{}{
+		passwordChallengeBody := map[string]any{
+			"credentials": map[string]any{
 				"passcode": password,
 			},
 		}
@@ -319,8 +320,8 @@ func Login(email, password, otpSecret, proxy string) (string, error) {
 		return "", fmt.Errorf("2FA code is empty")
 	}
 
-	challengeAnswerBody := map[string]interface{}{
-		"credentials": map[string]interface{}{
+	challengeAnswerBody := map[string]any{
+		"credentials": map[string]any{
 			"passcode": otpCode,
 		},
 	}
@@ -427,8 +428,8 @@ func selectOktaOTPAuthenticator(body, stateHandle, stateToken, referer string, c
 		return nil, errors.New("Okta OTP authenticator option not found")
 	}
 
-	selectBody := map[string]interface{}{
-		"authenticator": map[string]interface{}{
+	selectBody := map[string]any{
+		"authenticator": map[string]any{
 			"id": authenticatorID,
 		},
 	}
@@ -711,8 +712,8 @@ func normalizeBugcrowdHandle(handle string) string {
 		return parsed.EscapedPath()
 	}
 
-	if strings.HasPrefix(handle, "bugcrowd.com/") {
-		return "/" + strings.TrimPrefix(handle, "bugcrowd.com/")
+	if after, ok := strings.CutPrefix(handle, "bugcrowd.com/"); ok {
+		return "/" + after
 	}
 	return handle
 }
@@ -930,13 +931,7 @@ func extractScopeFromTargetTable(scopeTableURL string, categories string, token 
 
 		// If selectedCategories is not nil (i.e., not "all"), then we filter.
 		if selectedCategories != nil {
-			catMatches := false
-			for _, selectedCat := range selectedCategories {
-				if category == selectedCat {
-					catMatches = true
-					break
-				}
-			}
+			catMatches := slices.Contains(selectedCategories, category)
 			// If no match was found, skip this target.
 			if !catMatches {
 				continue
@@ -1069,7 +1064,7 @@ func updateOktaState(stateToken, stateHandle *string, body string) {
 	}
 }
 
-func addStateFields(body map[string]interface{}, stateHandle, stateToken string) {
+func addStateFields(body map[string]any, stateHandle, stateToken string) {
 	if body == nil {
 		return
 	}

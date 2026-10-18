@@ -294,12 +294,12 @@ func NormalizeForSubdomainTools(scope string) string {
 	processingStr = strings.Split(processingStr, "/")[0]
 	processingStr = strings.Split(processingStr, ":")[0]
 
-	if strings.HasSuffix(processingStr, ".*") {
-		processingStr = strings.TrimSuffix(processingStr, ".*") + ".com"
+	if before, ok := strings.CutSuffix(processingStr, ".*"); ok {
+		processingStr = before + ".com"
 	}
 
-	if strings.HasSuffix(processingStr, ".<tld>") {
-		processingStr = strings.TrimSuffix(processingStr, ".<tld>") + ".com"
+	if before, ok := strings.CutSuffix(processingStr, ".<tld>"); ok {
+		processingStr = before + ".com"
 	}
 
 	processingStr = strings.ReplaceAll(processingStr, "*", "")

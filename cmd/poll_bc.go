@@ -13,6 +13,13 @@ import (
 var pollBcCmd = &cobra.Command{
 	Use:   "bc",
 	Short: "Poll Bugcrowd programs",
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return bindViperFlags(cmd, map[string]string{
+			"bugcrowd.email":     "email",
+			"bugcrowd.password":  "password",
+			"bugcrowd.otpsecret": "otp-secret",
+		})
+	},
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		publicOnly, _ := cmd.Flags().GetBool("public-only")
 		token, _ := cmd.Flags().GetString("token") // Token is CLI-only, not from config
@@ -49,7 +56,4 @@ func init() {
 	pollBcCmd.Flags().StringP("email", "E", "", "Bugcrowd login email")
 	pollBcCmd.Flags().StringP("password", "P", "", "Bugcrowd login password")
 	pollBcCmd.Flags().StringP("otp-secret", "O", "", "Bugcrowd TOTP secret (base32)")
-	viper.BindPFlag("bugcrowd.email", pollBcCmd.Flags().Lookup("email"))
-	viper.BindPFlag("bugcrowd.password", pollBcCmd.Flags().Lookup("password"))
-	viper.BindPFlag("bugcrowd.otpsecret", pollBcCmd.Flags().Lookup("otp-secret"))
 }

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"net/http"
@@ -152,10 +152,7 @@ func (n *openAINormalizer) NormalizeTargets(ctx context.Context, info ProgramInf
 
 	var chunks []chunkWork
 	for start := 0; start < len(items); start += n.maxBatchSize {
-		end := start + n.maxBatchSize
-		if end > len(items) {
-			end = len(items)
-		}
+		end := min(start+n.maxBatchSize, len(items))
 		chunks = append(chunks, chunkWork{
 			index: len(chunks),
 			start: start,
@@ -277,7 +274,7 @@ func (n *openAINormalizer) queryLLM(ctx context.Context, info ProgramInfo, baseI
 				Message string `json:"message"`
 			} `json:"error"`
 		}
-		_ = json.NewDecoder(resp.Body).Decode(&apiErrResp)
+		_ = json.UnmarshalRead(resp.Body, &apiErrResp)
 		if apiErrResp.Error.Message != "" {
 			return nil, fmt.Errorf("ai normalization: %s", apiErrResp.Error.Message)
 		}
@@ -285,7 +282,7 @@ func (n *openAINormalizer) queryLLM(ctx context.Context, info ProgramInfo, baseI
 	}
 
 	var apiResp openAIChatResponse
-	if err := json.NewDecoder(resp.Body).Decode(&apiResp); err != nil {
+	if err := json.UnmarshalRead(resp.Body, &apiResp); err != nil {
 		return nil, err
 	}
 

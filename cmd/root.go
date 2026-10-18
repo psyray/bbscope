@@ -141,6 +141,17 @@ func initConfig() {
 
 }
 
+// bindViperFlags binds flags to viper keys for the command being run. Binding in
+// init() instead would let commands sharing a viper key clobber each other.
+func bindViperFlags(cmd *cobra.Command, bindings map[string]string) error {
+	for key, name := range bindings {
+		if err := viper.BindPFlag(key, cmd.Flags().Lookup(name)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func GetDBConnectionString() (string, error) {
 	url := viper.GetString("db_url")
 	if url == "" {

@@ -141,10 +141,7 @@ func StatsContent(platformCounts map[string]int, statsErr error,
 			counts = append(counts, strconv.Itoa(stat.Count))
 		}
 
-		chartHeight := 30*len(sortedAssetStats) + 100
-		if chartHeight < 200 {
-			chartHeight = 200
-		}
+		chartHeight := max(30*len(sortedAssetStats)+100, 200)
 
 		assetTypeChart := Div(Class("mt-12 p-6 bg-zinc-800/20 border border-zinc-700/50 rounded-xl"),
 			H2(Class("text-lg font-semibold text-zinc-300 mb-6 text-center"), g.Text("In-Scope Assets by Type")),

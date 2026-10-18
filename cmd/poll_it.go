@@ -13,6 +13,9 @@ import (
 var pollItCmd = &cobra.Command{
 	Use:   "it",
 	Short: "Poll Intigriti programs",
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return bindViperFlags(cmd, map[string]string{"intigriti.token": "token"})
+	},
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		token := viper.GetString("intigriti.token")
 		if token == "" {
@@ -37,5 +40,4 @@ var pollItCmd = &cobra.Command{
 func init() {
 	pollCmd.AddCommand(pollItCmd)
 	pollItCmd.Flags().StringP("token", "t", "", "Intigriti authorization token (Bearer)")
-	viper.BindPFlag("intigriti.token", pollItCmd.Flags().Lookup("token"))
 }

@@ -1236,7 +1236,7 @@ func extractDomain(target string) string {
 	}
 
 	// If it looks like a bare domain
-	cleaned := strings.Split(target, "/")[0]
+	cleaned, _, _ := strings.Cut(target, "/")
 	cleaned = strings.Split(cleaned, ":")[0] // Remove port
 	if strings.Contains(cleaned, ".") && !strings.Contains(cleaned, " ") {
 		return cleaned

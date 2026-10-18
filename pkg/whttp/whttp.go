@@ -76,10 +76,10 @@ func SendHTTPRequest(wReq *WHTTPReq, customClient *retryablehttp.Client) (wRes *
 	if wReq.CustomHost != "" {
 		req.Host = wReq.CustomHost
 	} else {
-		if strings.HasSuffix(req.Host, ":80") {
-			req.Host = strings.TrimSuffix(req.Host, ":80")
-		} else if strings.HasSuffix(req.Host, ":443") {
-			req.Host = strings.TrimSuffix(req.Host, ":443")
+		if before, ok := strings.CutSuffix(req.Host, ":80"); ok {
+			req.Host = before
+		} else if before, ok := strings.CutSuffix(req.Host, ":443"); ok {
+			req.Host = before
 		}
 	}
 

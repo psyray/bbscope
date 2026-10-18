@@ -13,6 +13,12 @@ import (
 var pollH1Cmd = &cobra.Command{
 	Use:   "h1",
 	Short: "Poll HackerOne programs",
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		return bindViperFlags(cmd, map[string]string{
+			"hackerone.username": "user",
+			"hackerone.token":    "token",
+		})
+	},
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		user := viper.GetString("hackerone.username")
 		token := viper.GetString("hackerone.token")
@@ -34,7 +40,5 @@ func init() {
 	pollCmd.AddCommand(pollH1Cmd)
 	pollH1Cmd.Flags().StringP("user", "u", "", "HackerOne username")
 	pollH1Cmd.Flags().StringP("token", "t", "", "HackerOne API token")
-	viper.BindPFlag("hackerone.username", pollH1Cmd.Flags().Lookup("user"))
-	viper.BindPFlag("hackerone.token", pollH1Cmd.Flags().Lookup("token"))
 	// Reuse common flags from parent via cobra's flag inheritance
 }

@@ -42,7 +42,7 @@ func (f *H1Fetcher) ListReports(ctx context.Context, opts FetchOptions) ([]Repor
 		}
 
 		count := int(gjson.Get(body, "data.#").Int())
-		for i := 0; i < count; i++ {
+		for i := range count {
 			prefix := "data." + strconv.Itoa(i)
 			summary := ReportSummary{
 				ID:             gjson.Get(body, prefix+".id").String(),
@@ -51,10 +51,9 @@ func (f *H1Fetcher) ListReports(ctx context.Context, opts FetchOptions) ([]Repor
 				Substate:       gjson.Get(body, prefix+".attributes.substate").String(),
 				CreatedAt:      gjson.Get(body, prefix+".attributes.created_at").String(),
 				SeverityRating: gjson.Get(body, prefix+".relationships.severity.data.attributes.rating").String(),
-			}
 
-			// Program handle from relationships
-			summary.ProgramHandle = gjson.Get(body, prefix+".relationships.program.data.attributes.handle").String()
+				// Program handle from relationships
+				ProgramHandle: gjson.Get(body, prefix+".relationships.program.data.attributes.handle").String()}
 
 			summaries = append(summaries, summary)
 		}

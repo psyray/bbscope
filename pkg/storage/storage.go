@@ -717,13 +717,13 @@ func (d *DB) UpsertProgramEntries(ctx context.Context, programURL, platform, han
 			return nil, err
 		}
 		for _, add := range variantAdds {
-			var catVal interface{}
+			var catVal any
 			if add.variant.HasCategory && !strings.EqualFold(add.variant.Category, add.entry.Category) {
 				catVal = add.variant.Category
 			} else {
 				add.variant.HasCategory = false
 			}
-			var inScopeVal interface{}
+			var inScopeVal any
 			if add.variant.HasInScope && add.variant.InScope != add.entry.InScope {
 				inScopeVal = boolToInt(add.variant.InScope)
 			} else {
@@ -763,13 +763,13 @@ func (d *DB) UpsertProgramEntries(ctx context.Context, programURL, platform, han
 			return nil, err
 		}
 		for _, upd := range variantUpdates {
-			var catVal interface{}
+			var catVal any
 			if upd.variant.HasCategory && !strings.EqualFold(upd.variant.Category, upd.entry.Category) {
 				catVal = upd.variant.Category
 			} else {
 				upd.variant.HasCategory = false
 			}
-			var inScopeVal interface{}
+			var inScopeVal any
 			if upd.variant.HasInScope && upd.variant.InScope != upd.entry.InScope {
 				inScopeVal = boolToInt(upd.variant.InScope)
 			} else {
@@ -1142,7 +1142,7 @@ type ListOptions struct {
 // ListEntries returns current entries matching filters.
 func (d *DB) ListEntries(ctx context.Context, opts ListOptions) ([]Entry, error) {
 	where := "WHERE 1=1"
-	args := []interface{}{}
+	args := []any{}
 	argIdx := 1
 
 	if opts.Platform != "" && opts.Platform != "all" {
@@ -1397,7 +1397,7 @@ func (d *DB) ListRecentChanges(ctx context.Context, limit int, since, until time
 	}
 
 	where := "WHERE 1=1"
-	args := []interface{}{}
+	args := []any{}
 	argIdx := 1
 
 	if !since.IsZero() {
@@ -1472,7 +1472,7 @@ func (d *DB) ListChangesPaginated(ctx context.Context, opts ChangesPageOptions) 
 			AND c2.occurred_at = c.occurred_at
 		)
 	)`
-	args := []interface{}{}
+	args := []any{}
 	argIdx := 1
 
 	if opts.Platform != "" {
@@ -1817,7 +1817,7 @@ func (d *DB) SearchTargets(ctx context.Context, searchTerm string) ([]Entry, err
 	return out, rows.Err()
 }
 
-func nullIfEmpty(s string) interface{} {
+func nullIfEmpty(s string) any {
 	if s == "" {
 		return nil
 	}

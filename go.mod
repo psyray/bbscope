@@ -1,6 +1,6 @@
 module github.com/sw33tLie/bbscope/v2
 
-go 1.24.0
+go 1.27.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.6.1
@@ -13,12 +13,12 @@ require (
 	github.com/tidwall/gjson v1.8.1
 	github.com/weppos/publicsuffix-go v0.50.0
 	golang.org/x/net v0.44.0
+	maragu.dev/gomponents v1.1.0
 )
 
 require (
 	github.com/andybalholm/cascadia v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/gomarkdown/markdown v0.0.0-20260217112301-37c66b85d6ab // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
@@ -39,5 +39,4 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	maragu.dev/gomponents v1.1.0 // indirect
 )

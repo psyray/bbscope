@@ -45,25 +45,25 @@ func PrintProgramScope(programScope ProgramData, outputFlags string, delimiter s
 }
 
 func createLine(scopeElement ScopeElement, url, outputFlags, delimiter string) string {
-	var line string
+	var line strings.Builder
 	// Unify category before printing
 	unifiedCategory := NormalizeCategory(scopeElement.Category)
 
 	for _, f := range outputFlags {
 		switch f {
 		case 't':
-			line += scopeElement.Target + delimiter
+			line.WriteString(scopeElement.Target + delimiter)
 		case 'd':
-			line += scopeElement.Description + delimiter
+			line.WriteString(scopeElement.Description + delimiter)
 		case 'c':
-			line += unifiedCategory + delimiter
+			line.WriteString(unifiedCategory + delimiter)
 		case 'u':
-			line += url + delimiter
+			line.WriteString(url + delimiter)
 		default:
 			log.Fatal("Invalid print flag")
 		}
 	}
-	return strings.TrimSuffix(line, delimiter)
+	return strings.TrimSuffix(line.String(), delimiter)
 }
 
 // unificationMap is the source of truth for category normalization.
@@ -80,6 +80,13 @@ var unificationMap = map[string][]string{
 	"binary":     {"windows_app_store_app_id", "downloadable_executables"},
 	"code":       {"source_code"},
 	"other":      {"other", "aws_cloud_config", "application", "network"},
+}
+
+// inputAliases accepts alternate --category spellings, mapped to unified names.
+var inputAliases = map[string][]string{
+	"apple":  {"ios"},
+	"device": {"hardware"},
+	"mobile": {"android", "ios"},
 }
 
 // categoryMap is a reverse map generated from unificationMap for efficient lookups.
@@ -135,20 +142,32 @@ func GetAllStringsForCategories(input string) []string {
 	finalCategoriesSet := make(map[string]bool)
 
 	// Split comma-separated values
-	rawCategories := strings.Split(input, ",")
+	rawCategories := strings.SplitSeq(input, ",")
 
-	for _, rawCategory := range rawCategories {
+	for rawCategory := range rawCategories {
 		categoryKey := strings.TrimSpace(rawCategory)
 
-		// Look up in the unificationMap
-		platformSpecificStrings, ok := unificationMap[categoryKey]
+		unifiedKeys, ok := inputAliases[categoryKey]
 		if !ok {
-			utils.Log.Warnf("Invalid category '%s' selected, it will be ignored.", categoryKey)
-			continue // Skip invalid category
+			unifiedKeys = []string{categoryKey}
 		}
 
-		for _, s := range platformSpecificStrings {
-			finalCategoriesSet[s] = true
+		matched := false
+		for _, unifiedKey := range unifiedKeys {
+			// Look up in the unificationMap
+			platformSpecificStrings, ok := unificationMap[unifiedKey]
+			if !ok {
+				continue
+			}
+			matched = true
+
+			for _, s := range platformSpecificStrings {
+				finalCategoriesSet[s] = true
+			}
+		}
+
+		if !matched {
+			utils.Log.Warnf("Invalid category '%s' selected, it will be ignored.", categoryKey)
 		}
 	}
 

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"os"
@@ -259,7 +259,7 @@ var printCmd = &cobra.Command{
 				scope.PrintProgramScope(pd, output, delimiter, oos)
 			}
 		case "json":
-			out := make([]interface{}, 0)
+			out := make([]any, 0)
 			for _, e := range filtered {
 				out = append(out, struct {
 					ProgramURL  string `json:"program_url"`
@@ -396,8 +396,8 @@ var addCmd = &cobra.Command{
 		}
 		defer db.Close()
 
-		targets := strings.Split(target, ",")
-		for _, t := range targets {
+		targets := strings.SplitSeq(target, ",")
+		for t := range targets {
 			t = strings.TrimSpace(t)
 			if t != "" {
 				created, err := db.AddCustomTarget(context.Background(), t, category, programURL)

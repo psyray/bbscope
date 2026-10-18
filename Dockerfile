@@ -1,6 +1,6 @@
 # Use the official Golang image to create a build artifact.
 # This is known as a multi-stage build.
-FROM golang:1.24-alpine as builder
+FROM golang:1.27-alpine as builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /app
